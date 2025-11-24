@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园二手交易平台</title>
+    <style>
+        /* --- CSS 样式表 --- */
+        :root {
+            --lake-blue: #5D83A6;
+            --falu-red: #701D1C;
+            --sunset: #FFC872;
+            --bg-light: #f4f7f6;
+            --text-dark: #333;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* 头部导航 */
+        header {
+            background-color: var(--lake-blue);
+            color: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+
+        nav button {
+            background: none;
+            border: none;
+            color: var(--white);
+            margin-left: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        nav button:hover {
+            color: var(--sunset);
+            text-decoration: underline;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            min-height: 80vh;
+        }
+
+        /* 页面显示控制 */
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- 首页分类 --- */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .category-card:hover {
+            border-color: var(--lake-blue);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        .category-card h3 {
+            color: var(--lake-blue);
+            margin-bottom: 10px;
+        }
+
+        .category-icon {
+            font-size: 3rem;
+            color: var(--sunset);
+            margin-bottom: 1rem;
+        }
+
+        /* --- 商品列表页 --- */
+        .section-title {
+            color: var(--lake-blue);
+            border-bottom: 3px solid var(--sunset);
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding-bottom: 5px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: scale(1.02);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+
+        .product-info {
+            padding: 1rem;
+        }
+
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-price {
+            color: var(--falu-red);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .product-condition {
+            display: inline-block;
+            background-color: var(--lake-blue);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 5px;
+        }
+
+        /* --- 商品详情页 --- */
+        .detail-container {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .detail-image {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .detail-image img {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid var(--bg-light);
+        }
+
+        .detail-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .detail-content h2 {
+            color: var(--lake-blue);
+            margin-bottom: 1rem;
+        }
+
+        .detail-price {
+            font-size: 2rem;
+            color: var(--falu-red);
+            margin-bottom: 1rem;
+        }
+
+        .detail-meta {
+            margin-bottom: 2rem;
+        }
+
+        .detail-meta p {
+            margin-bottom: 0.5rem;
+        }
+
+        .tag {
+            background-color: var(--sunset);
+            color: var(--text-dark);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .contact-box {
+            background-color: #f9f9f9;
+            border-left: 5px solid var(--falu-red);
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 1rem;
+            color: var(--lake-blue);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* 底部 */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--lake-blue);
+            color: var(--white);
+            margin-top: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 onclick="goHome()">CampusTrade 校园集市</h1>
+        <nav>
+            <button onclick="goHome()">首页</button>
+            <button onclick="showAll()">所有商品</button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div id="home-view" class="view active">
+            <h2 style="text-align:center; margin-bottom: 2rem; color: var(--lake-blue);">浏览分类</h2>
+            <div class="category-grid">
+                <div class="category-card" onclick="filterCategory('learning')">
+                    <div class="category-icon">📚</div>
+                    <h3>学习用品</h3>
+                    <p>教材、笔记、文具</p>
+                </div>
+                <div class="category-card" onclick="filterCategory('electronics')">
+                    <div class="category-icon">💻</div>
+                    <h3>电子产品</h3>
+                    <p>手机、电脑、配件</p>
+                </div>
+                <div class="category-card" onclick="filterCategory('apparel')">
+                    <div class="category-icon">👕</div>
+                    <h3>服饰箱包</h3>
+                    <p>衣物、鞋子、背包</p>
+                </div>
+                <div class="category-card" onclick="filterCategory('sports')">
+                    <div class="category-icon">🏀</div>
+                    <h3>体育器材</h3>
+                    <p>球拍、健身器材</p>
+                </div>
+                <div class="category-card" onclick="filterCategory('daily')">
+                    <div class="category-icon">🧴</div>
+                    <h3>生活百货</h3>
+                    <p>收纳、台灯、杂物</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="list-view" class="view">
+            <div class="back-btn" onclick="goHome()">&larr; 返回首页</div>
+            <h2 id="list-title" class="section-title">商品列表</h2>
+            <div id="product-list-container" class="product-grid">
+                </div>
+        </div>
+
+        <div id="detail-view" class="view">
+            <div class="back-btn" onclick="goBackToList()">&larr; 返回列表</div>
+            <div class="detail-container" id="product-detail-container">
+                </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 CampusTrade 二手交易平台 | 绿色校园 循环利用</p>
+    </footer>
+
+    <script>
+        // --- 模拟数据库数据 ---
+        // 图片使用了 Placeholder 占位图服务
+        const products = [
+            // 学习用品 (Learning Supplies)
+            { id: 1, category: 'learning', name: '高等数学（第七版）上下册', price: '¥25.00', condition: '九成新', contact: '微信: math_master', img: 'https://placehold.co/400x300/5D83A6/white?text=Math+Book', desc: '考研用书，只翻过几次，内部有少量笔记。' },
+            { id: 2, category: 'learning', name: 'Casio 科学计算器 fx-991', price: '¥45.00', condition: '八成新', contact: 'QQ: 12345678', img: 'https://placehold.co/400x300/5D83A6/white?text=Calculator', desc: '功能完好，考试必备，送电池。' },
+            
+            // 电子产品 (Electronics)
+            { id: 3, category: 'electronics', name: 'iPad Air 4 64G 灰色', price: '¥2200.00', condition: '九五新', contact: '电话: 13800138000', img: 'https://placehold.co/400x300/5D83A6/white?text=iPad', desc: '一直戴套贴膜，无划痕，电池健康95%。' },
+            { id: 4, category: 'electronics', name: '罗技静音鼠标 Pebble', price: '¥30.00', condition: '七成新', contact: '微信: mouse_sell', img: 'https://placehold.co/400x300/5D83A6/white?text=Mouse', desc: '适合图书馆使用，非常安静，带接收器。' },
+
+            // 服饰箱包 (Apparel & Shoes & Bags)
+            { id: 5, category: 'apparel', name: 'Nike 运动双肩包 黑色', price: '¥80.00', condition: '八成新', contact: '微信: bag_boy', img: 'https://placehold.co/400x300/5D83A6/white?text=Nike+Bag', desc: '容量大，适合装电脑和书本，拉链完好。' },
+            { id: 6, category: 'apparel', name: '优衣库牛仔外套 (L码)', price: '¥50.00', condition: '九成新', contact: 'QQ: 87654321', img: 'https://placehold.co/400x300/5D83A6/white?text=Jacket', desc: '买大了只穿过一次，已清洗干净。' },
+
+            // 体育器材 (Sports Equipment)
+            { id: 7, category: 'sports', name: '尤尼克斯羽毛球拍 (入门款)', price: '¥100.00', condition: '六成新', contact: '电话: 13900139000', img: 'https://placehold.co/400x300/5D83A6/white?text=Racket', desc: '拍框有掉漆，但不影响使用，已穿新线。' },
+            { id: 8, category: 'sports', name: '家用瑜伽垫 (加厚)', price: '¥15.00', condition: '九成新', contact: '微信: yoga_girl', img: 'https://placehold.co/400x300/5D83A6/white?text=Yoga+Mat', desc: '宿舍健身用，很厚实，带收纳带。' },
+
+            // 生活百货 (Daily Secondhand Items)
+            { id: 9, category: 'daily', name: '小米台灯 1S', price: '¥60.00', condition: '九成新', contact: '微信: light_seller', img: 'https://placehold.co/400x300/5D83A6/white?text=Lamp', desc: '护眼模式，支持米家APP控制。' },
+            { id: 10, category: 'daily', name: '简易收纳柜 (三层)', price: '¥20.00', condition: '八成新', contact: 'QQ: 11223344', img: 'https://placehold.co/400x300/5D83A6/white?text=Storage', desc: '毕业带不走，自提优先。' }
+        ];
+
+        // 类别名称映射
+        const categoryNames = {
+            'learning': '学习用品',
+            'electronics': '电子产品',
+            'apparel': '服饰箱包',
+            'sports': '体育器材',
+            'daily': '生活百货'
+        };
+
+        let lastCategory = ''; // 记录上一次浏览的分类，用于返回按钮
+
+        // --- 页面导航逻辑 ---
+
+        function hideAllViews() {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        }
+
+        function goHome() {
+            hideAllViews();
+            document.getElementById('home-view').classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function showAll() {
+            lastCategory = '';
+            renderProductList(products, '所有商品');
+        }
+
+        function filterCategory(cat) {
+            lastCategory = cat;
+            const filtered = products.filter(p => p.category === cat);
+            renderProductList(filtered, categoryNames[cat]);
+        }
+
+        function goBackToList() {
+            if (lastCategory) {
+                filterCategory(lastCategory);
+            } else {
+                showAll();
+            }
+        }
+
+        // --- 渲染逻辑 ---
+
+        function renderProductList(items, title) {
+            hideAllViews();
+            document.getElementById('list-view').classList.add('active');
+            document.getElementById('list-title').innerText = title;
+            
+            const container = document.getElementById('product-list-container');
+            container.innerHTML = '';
+
+            if (items.length === 0) {
+                container.innerHTML = '<p>暂无商品</p>';
+                return;
+            }
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = () => showProductDetail(item.id);
+                
+                card.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}" class="product-img">
+                    <div class="product-info">
+                        <div class="product-name">${item.name}</div>
+                        <div class="product-price">${item.price}</div>
+                        <div class="product-condition">${item.condition}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            window.scrollTo(0,0);
+        }
+
+        function showProductDetail(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            hideAllViews();
+            document.getElementById('detail-view').classList.add('active');
+
+            const container = document.getElementById('product-detail-container');
+            container.innerHTML = `
+                <div class="detail-image">
+                    <img src="${product.img}" alt="${product.name}">
+                </div>
+                <div class="detail-content">
+                    <h2>${product.name}</h2>
+                    <div class="detail-price">${product.price}</div>
+                    <div class="detail-meta">
+                        <p><strong>新旧程度：</strong> <span class="tag">${product.condition}</span></p>
+                        <p><strong>分类：</strong> ${categoryNames[product.category]}</p>
+                        <p><strong>商品描述：</strong><br>${product.desc}</p>
+                    </div>
+                    
+                    <div class="contact-box">
+                        <h3>卖家联系方式</h3>
+                        <p style="font-size: 1.2rem; margin-top: 5px;">${product.contact}</p>
+                        <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">联系时请备注来自校园交易平台</p>
+                    </div>
+                </div>
+            `;
+            window.scrollTo(0,0);
+        }
+    </script>
+</body>
+</html>
